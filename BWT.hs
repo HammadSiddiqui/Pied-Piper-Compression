@@ -5,8 +5,8 @@
 
 -- type String = [Char]
 
-import Data.List
-import Data.List (sort)  
+import Data.List (sort) 
+import System.IO 
 
 type BWT = [String]
 samplebwt = ["BANANA$"]
