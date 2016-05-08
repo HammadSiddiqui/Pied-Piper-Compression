@@ -76,6 +76,15 @@ mergeOut lst
 ------------------ Decompress -----------------
 decompress :: [String] -> Dict -> String
 decompress [] d = "" 
+decompress [""] d = "" 
+{-
+- decompress recieves a list of integers of type string.
+- for e.g: ["97","98","258","123"]
+- starting from the first element. It converts string to int: "97" -> 97
+- if the element is under 255, the 'chr' function prints its corrosponding ASCII letter
+- Concatenation of the current letter with the next letter is added to the Dict with a value > 255
+- Decompress is then recursively called on the tail of the list
+-}
 decompress lst@(x:xs) d = if (read x :: Int) <= 255  then [chr (read x :: Int)] ++ decompress xs (add x [head (head(xs))] d)
 --	| (read x :: Int) > 255 = [findInt x d]
 --	| x == "" = []
@@ -84,8 +93,10 @@ decompress lst@(x:xs) d = if (read x :: Int) <= 255  then [chr (read x :: Int)] 
 
 --add2 str1 str2 d = d ++ [()] 
 
+
+-- Finds the string corrosponding to a value greater then 255
 findInt :: Int -> Dict -> String
---findInt i [] = [chr i]
+findInt i [] = [chr i]
 findInt i d@(x:xs) 
     | thd x == i = sd x
 	| thd x /= i = findInt i xs
