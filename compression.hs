@@ -23,7 +23,7 @@ compressionNoBWT fname outname = do
 
 {-decompressionBWT fname outname = do  
 			    compressedStr <- readFile fname
-			    writeFile outname (inverseBWT [(decompress (init (splitOn " " compressedStr)) [])])
+			    writeFile outname (inverseBWT [(decompress (splitOn " " compressedStr) [])])
 -}
 decompressionNoBWT fname outname = do  
 			    compressedStr <- readFile fname
@@ -74,9 +74,7 @@ mergeOut lst
 
 
 ------------------ Decompress -----------------
-decompress :: [String] -> Dict -> String
-decompress [] d = "" 
-decompress [""] d = "" 
+
 {-
 - decompress recieves a list of integers of type string.
 - for e.g: ["97","98","258","123"]
@@ -85,19 +83,26 @@ decompress [""] d = ""
 - Concatenation of the current letter with the next letter is added to the Dict with a value > 255
 - Decompress is then recursively called on the tail of the list
 -}
-decompress lst@(x:xs) d = if (read x :: Int) <= 255  then [chr (read x :: Int)] ++ decompress xs (add x [head (head(xs))] d)
+
+decompress :: [String] -> Dict -> String
+decompress [] d = "" 
+decompress [""] d = "" 
+decompress lst@(x:xs) d = if (read x :: Int) <= 255  then [chr (read x :: Int)] ++ (decompress xs (add2 [chr (read (x) :: Int)] [chr (read (head xs) :: Int)] d))
 --	| (read x :: Int) > 255 = [findInt x d]
 --	| x == "" = []
-	else (findInt (read x :: Int) d) ++ decompress xs d
+	else (findInt (read x :: Int) (add2 x (head xs) d)) ++ decompress xs (add2 x (head xs) d)
 --if findStr (head substr) d
 
---add2 str1 str2 d = d ++ [()] 
+-- Dictionary addition for decompress
+add2 :: String -> String  -> Dict -> Dict
+add2 str1 str2 d = d ++ [(0, (str1++str2), (maxIndex d) + 1)] 
 
 
 -- Finds the string corrosponding to a value greater then 255
 findInt :: Int -> Dict -> String
 findInt i [] = [chr i]
 findInt i d@(x:xs) 
+	| i <= 255 = [chr i]
     | thd x == i = sd x
 	| thd x /= i = findInt i xs
 	| otherwise = ""
@@ -148,7 +153,7 @@ rotateBWT a = if (head l) == '$' then a
 
 
 
------------------------------ Dr. Waqar's Strategy ------------------
+----------------------------- Dr. Waqar's Strategy for BWT ------------------
 someString = ["Anas"]
 genBWTmatrix2 = (transpose (sort(transpose (rotateBWT2 [(head someString) ++ "$"])))) !! 1
 
