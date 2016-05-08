@@ -21,12 +21,12 @@ type BWT = [String]  -- Custom type for BWT matrix
 compressionBWT fname outname = do  
             contents <- readFile fname
             writeFile outname (mergeOut (compress ([head (genBWTmatrix contents)]) (tail (genBWTmatrix contents)) []))
-		 
+         
 -- Compression without BWT Transform
 compressionNoBWT fname outname = do  
             contents <- readFile fname
             writeFile outname (mergeOut (compress ([head  contents]) (tail contents) []))
-		  
+          
 -- Decompression with BWT Transform
 decompressionBWT fname outname = do  
             compressedStr <- readFile fname
@@ -70,7 +70,7 @@ maxIndex d = 255 + (length d)
 --performs the Lempel Ziv Welch compression algorithm
 compress :: String -> String -> Dict -> Dict
 compress current str d
-    |str == "" =  d
+    |str == "" =  add current ("") d
     |(findStr (current ++ [str!!0]) d) /= -1 = compress (current ++ [str !! 0]) (tail str) d --(current + next) already present in d. current = current + next
     |otherwise = compress ([str !! 0]) (tail str) (add current (current ++ [str !! 0]) d) -- add (current + next) to d. save the value of current for output 
 
@@ -115,7 +115,7 @@ findInt i d@(x:xs)
 
 
 --------------------- BWT -----------------------
---converts a string of the form "cats" to ["c" , "a", "t" , "s"]	   
+--converts a string of the form "cats" to ["c" , "a", "t" , "s"]       
 listChar :: String -> [String]
 listChar str
     |length str == 1 = [str] 
