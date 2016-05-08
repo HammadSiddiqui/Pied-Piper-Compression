@@ -1,12 +1,18 @@
+{-
+- Piep Piper's Middle out compression
+- Using Burrows-Wheeler transformation and Lempel Ziv Welch compression scheme
+- Collaborators: Hammad Siddiqui & Sumbul Zehra
+-}
+
+
 
 import Data.List
 import Data.List (sort)
 import Data.List.Split
 import System.IO   
 import Data.Char
-type Dict = [(Int , String, Int)]
---type ReverseDict = [(String, Int)]
-type BWT = [String]  
+type Dict = [(Int , String, Int)] -- Custom type to store dicitonary
+type BWT = [String]  -- Custom type for BWT matrix
    
 
 compressionBWT fname outname = do  
@@ -19,12 +25,10 @@ compressionNoBWT fname outname = do
 		    writeFile outname (mergeOut (compress ([head  contents]) (tail contents) []))
 		  
 
-
-
-{-decompressionBWT fname outname = do  
+decompressionBWT fname outname = do  
 			    compressedStr <- readFile fname
-			    writeFile outname (inverseBWT [(decompress (splitOn " " compressedStr) [])])
--}
+			    writeFile outname (inverseBWT (decompress (splitOn " " compressedStr) []))
+
 decompressionNoBWT fname outname = do  
 			    compressedStr <- readFile fname
 			    writeFile outname (decompress (splitOn " " compressedStr) [])
@@ -90,7 +94,7 @@ decompress [""] d = ""
 decompress lst@(x:xs) d = if (read x :: Int) <= 255  then [chr (read x :: Int)] ++ (decompress xs (add2 [chr (read (x) :: Int)] [chr (read (head xs) :: Int)] d))
 --	| (read x :: Int) > 255 = [findInt x d]
 --	| x == "" = []
-	else (findInt (read x :: Int) (add2 x (head xs) d)) ++ decompress xs (add2 x (head xs) d)
+	else (findInt (read x :: Int) (add2 x (head xs) d)) ++ (decompress xs (add2 [chr (read (x) :: Int)] [chr (read (head xs) :: Int)] d))
 --if findStr (head substr) d
 
 -- Dictionary addition for decompress
@@ -108,7 +112,7 @@ findInt i d@(x:xs)
 	| otherwise = ""
 
 
----------------------BWT-----------------------
+--------------------- BWT -----------------------
 --converts a string of the form "cats" to ["c" , "a", "t" , "s"]	   
 listChar :: String -> [String]
 listChar str
